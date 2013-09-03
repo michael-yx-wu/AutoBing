@@ -75,12 +75,14 @@ driver = webdriver.Chrome()
 if args.login == "fb":
     driver.get("https://www.facebook.com/login.php?skip_api_login=1&next=https%3A%2F%2Fwww.facebook.com%2Fdialog%2Foauth%3Fclient_id%3D111239619098%26auth_type%3Dhttps%26redirect_uri%3Dhttps%253A%252F%252Fssl.bing.com%252Ffd%252Fauth%252Fsignin%253Faction%253Dfacebook_oauth%2526provider%253Dfacebook%26from_login%3D1&cancel_uri=https%3A%2F%2Fssl.bing.com%2Ffd%2Fauth%2Fsignin%3Faction%3Dfacebook_oauth%26provider%3Dfacebook&api_key=111239619098")
     driver.find_element_by_xpath('//*[@id="email"]').send_keys(args.username);
+    driver.find_element_by_xpath('//*[@id="pass"]').clear()
     driver.find_element_by_xpath('//*[@id="pass"]').send_keys(args.password);
     driver.find_element_by_xpath('//*[@id="u_0_1"]').click()
 
 elif args.login == "ms":
     driver.get("https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=11&ct=1367638624&rver=6.0.5286.0&wp=MBI&wreply=http:%2F%2Fwww.bing.com%2FPassport.aspx%3Frequrl%3Dhttp%253a%252f%252fwww.bing.com%252f&lc=1033&id=264960")
     driver.find_element_by_xpath('//*[@id="i0116"]').send_keys(args.username);
+    driver.find_element_by_xpath('//*[@id="i0118"]').clear()
     driver.find_element_by_xpath('//*[@id="i0118"]').send_keys(args.password);
     driver.find_element_by_xpath('//*[@id="idSIButton9"]').click()
 
@@ -115,8 +117,6 @@ if login:
         except:
             print "couldn't click element"
             mylist = driver.find_elements_by_xpath("//*[contains(@href,'rewardsapp')]")
-
-
 
 # stop virtual display
 if args.virtual:
