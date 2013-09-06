@@ -128,3 +128,5 @@ try:
     os.remove("libpeerconnection.log")
 except:
     print "logs don't exist or failed to remove"
+    exit(1)
+exit(0)
