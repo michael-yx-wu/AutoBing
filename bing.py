@@ -121,14 +121,19 @@ if login:
     driver.get('http://www.bing.com/rewards/dashboard')
     mylist = driver.find_elements_by_xpath("//*[contains(@href,'rewardsapp')]")
     numlinks = len(mylist)
+    
+    first = 0
+    if 'Connect to Facebook' in mylist[first].text:
+      first = 1
 
     for i in range(numlinks):
         try:
-            mylist[i].click()
+            mylist[first].click()
         except:
             print "couldn't click element"
-            mylist = driver.find_elements_by_xpath("//*[contains(@href,'rewardsapp')]")
-  
+        driver.get('http://www.bing.com/rewards/dashboard')
+        mylist = driver.find_elements_by_xpath("//*[contains(@href,'rewardsapp')]")
+    
     if args.getrewards:
       print 'attempting to get rewards'
       driver.get('http://www.bing.com/rewards/dashboard')
