@@ -136,11 +136,15 @@ if login:
     
     if args.getrewards:
       print 'attempting to get rewards'
-      driver.get('http://www.bing.com/rewards/dashboard')
-      my_points = driver.find_element_by_xpath("//*[@id='id_rc']")
-      print my_points.text
-      print my_points.tag_name
-      print my_points.id
+      driver.get('http://www.bing.com/rewards/redeem/000100000004?meru=%252f')
+      try:
+        reward_button = driver.find_element_by_xpath("//*[@id='SingleProduct_SubmitForm']")
+        reward_button.click()
+        print 'attempting to confirm reward'
+        confirm_button = driver.find_element_by_xpath("//*[@id='CheckoutReview_SubmitForm']")
+        confirm_button.click()
+      except:
+        print 'insufficient reward points at this time'
 
 # stop virtual display
 if args.virtual:
