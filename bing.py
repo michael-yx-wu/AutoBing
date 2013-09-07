@@ -4,9 +4,15 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import argparse
 import os
-from random import randint
+import random
 import sys
 import re
+import time
+
+kMaxSleep = 5
+
+# seed random number generator with current system time
+random.seed(time.time())
 
 # parse command line args
 parser = argparse.ArgumentParser()
@@ -16,6 +22,8 @@ parser.add_argument("-d", "--virtual", help="run in virtual display",
 parser.add_argument("-n", "--numsearch", help="number of searches", type=int, default=30)
 parser.add_argument("-u", "--username", help="login username")
 parser.add_argument("-p", "--password", help="login password")
+parser.add_argument("-r", "--getrewards", help="attempt to redeem rewards",
+    action="store_true", default=False)
 parser.add_argument("--dict", help="abs dictionary location if not in same dir", default="")
 args = parser.parse_args()
 
@@ -43,9 +51,8 @@ phrases = {1:'How to make',        # <adjective> + <noun> + <adverb>
            4:'How to',             # <adverb> + <verb>
            5:'I want to'}          # <adverb> + <verb>
 
-
 def generate_search():
-    num = randint(1, 5)
+    num = random.randint(1, 5)
     if num == 1 or num == 2 or num == 3:
         phrase = phrases[num] + " " + random_line(adj, adjectives_bytes) + " " + random_line(nouns, nouns_bytes) + " " + random_line(adv, adverbs_bytes)
     else:
@@ -53,7 +60,7 @@ def generate_search():
     return phrase    
 
 def random_line(dictionary, total_bytes):
-    dictionary.seek(randint(0, total_bytes-15))
+    dictionary.seek(random.randint(0, total_bytes-15))
     dictionary.readline()
     return dictionary.readline().strip('\n')
 
@@ -104,9 +111,9 @@ if login:
         search_string = generate_search()
         search_bar.clear()
         search_bar.send_keys(search_string)
-        sleep(2)
+        time.sleep(kMaxSleep * random.random())
         search_button.click()
-        sleep(2)
+        time.sleep(kMaxSleep * random.random())
 
     # get bonus rewards
     print 'getting bonus rewards'
@@ -120,6 +127,14 @@ if login:
         except:
             print "couldn't click element"
             mylist = driver.find_elements_by_xpath("//*[contains(@href,'rewardsapp')]")
+  
+    if args.getrewards:
+      print 'attempting to get rewards'
+      driver.get('http://www.bing.com/rewards/dashboard')
+      my_points = driver.find_element_by_xpath("//*[@id='id_rc']")
+      print my_points.text
+      print my_points.tag_name
+      print my_points.id
 
 # stop virtual display
 if args.virtual:
