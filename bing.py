@@ -137,7 +137,7 @@ if login:
     if args.getrewards:
       print 'attempting to get rewards'
       driver.get('http://www.bing.com/rewards/dashboard')
-      my_points = driver.find_element_by_xpath("//*[@id='id_rc']")
+      my_points = driver.find_element_by_xpath("//*[@id=\"user-status\"]/div[2]/div[2]/div[2]/span")
       print my_points.text
       print my_points.tag_name
       print my_points.id
@@ -154,4 +154,3 @@ except:
     print "logs don't exist or failed to remove"
 
 exit(0)
-
