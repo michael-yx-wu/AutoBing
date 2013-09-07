@@ -5,6 +5,7 @@ from selenium.webdriver.common.keys import Keys
 import argparse
 import os
 from random import randint
+from time import sleep
 import sys
 import re
 
