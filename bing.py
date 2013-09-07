@@ -11,7 +11,8 @@ import re
 # parse command line args
 parser = argparse.ArgumentParser()
 parser.add_argument("login", help="login method", choices=['fb', 'ms'])
-parser.add_argument("-d", "--virtual", help="run in virtual display", action="store_true", default=False)
+parser.add_argument("-d", "--virtual", help="run in virtual display", 
+		    action="store_true", default=False)
 parser.add_argument("-n", "--numsearch", help="number of searches", type=int, default=30)
 parser.add_argument("-u", "--username", help="login username")
 parser.add_argument("-p", "--password", help="login password")
@@ -103,7 +104,9 @@ if login:
         search_string = generate_search()
         search_bar.clear()
         search_bar.send_keys(search_string)
+        sleep(2)
         search_button.click()
+        sleep(2)
 
     # get bonus rewards
     print 'getting bonus rewards'
@@ -128,5 +131,6 @@ try:
     os.remove("libpeerconnection.log")
 except:
     print "logs don't exist or failed to remove"
-    exit(1)
+
 exit(0)
+
