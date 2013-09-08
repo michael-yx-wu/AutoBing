@@ -136,8 +136,7 @@ if login:
     
     if args.getrewards:
       print 'attempting to get rewards'
-      driver.get('http://www.bing.com/rewards/redeem/000100000004?meru=%252f')
-      try:
+      driver.get('http://www.bing.com/rewards/redeem/000100000004?meru=%252f'h try:
         reward_button = driver.find_element_by_xpath("//*[@id='SingleProduct_SubmitForm']")
         reward_button.click()
         print 'attempting to confirm reward'
@@ -158,4 +157,3 @@ except:
     print "logs don't exist or failed to remove"
 
 exit(0)
-
