@@ -65,6 +65,24 @@ def random_line(dictionary, total_bytes):
     dictionary.readline()
     return dictionary.readline().strip('\n')
 
+def get_bonus_rewards(xpath_id):
+  driver.get('http://www.bing.com/rewards/dashboard')
+  full_xpath = "//*[contains(@href,'" + xpath_id + "')]"
+  mylist = driver.find_elements_by_xpath(full_xpath)
+  numlinks = len(mylist)
+  
+  first = 0
+  if 'Connect to Facebook' in mylist[first].text:
+    first = 1
+
+  for i in range(numlinks):
+      try:
+          mylist[first].click()
+      except:
+          print "couldn't click element"
+      driver.get('http://www.bing.com/rewards/dashboard')
+      mylist = driver.find_elements_by_xpath(full_xpath)
+
 # check for virutal display
 if args.virtual:
     if not 'linux' in sys.platform:
@@ -118,22 +136,10 @@ if login:
 
     # get bonus rewards
     print 'getting bonus rewards'
-    driver.get('http://www.bing.com/rewards/dashboard')
-    mylist = driver.find_elements_by_xpath("//*[contains(@href,'rewardsapp')]")
-    numlinks = len(mylist)
-    
-    first = 0
-    if 'Connect to Facebook' in mylist[first].text:
-      first = 1
+    get_bonus_rewards("rewardsapp")
+    get_bonus_rewards("rewards/challenge")
 
-    for i in range(numlinks):
-        try:
-            mylist[first].click()
-        except:
-            print "couldn't click element"
-        driver.get('http://www.bing.com/rewards/dashboard')
-        mylist = driver.find_elements_by_xpath("//*[contains(@href,'rewardsapp')]")
-    
+    # attempt to redeem rewards
     if args.getrewards:
       print 'attempting to get rewards'
       driver.get('http://www.bing.com/rewards/redeem/000100000004?meru=%252f')
