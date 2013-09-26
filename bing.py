@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/python
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -18,14 +18,12 @@ random.seed(time.time())
 # parse command line args
 parser = argparse.ArgumentParser()
 parser.add_argument("login", help="login method", choices=['fb', 'ms'])
-parser.add_argument("-d", "--virtual", help="run in virtual display", 
-		    action="store_true", default=False)
+parser.add_argument("-d", "--virtual", help="run in virtual display", action="store_true", default=False)
 parser.add_argument("-n", "--numsearch", help="number of searches", type=int, default=30)
 parser.add_argument("-u", "--username", help="login username")
 parser.add_argument("-p", "--password", help="login password")
-parser.add_argument("-r", "--getrewards", help="attempt to redeem rewards",
-    action="store_true", default=False)
-parser.add_argument("--dict", help="abs dictionary location if not in same dir", default="")
+parser.add_argument("-r", "--getrewards", help="attempt to redeem rewards", action="store_true", default=False)
+parser.add_argument("--dict", help="absolute dictionary location if not in same directory", default="")
 args = parser.parse_args()
 
 dirpath = re.match("^(.*)/([^/])*$",sys.argv[0]).group(1)
@@ -60,28 +58,33 @@ def generate_search():
         phrase = phrases[num] + " " + random_line(adv, adverbs_bytes) + " " + random_line(verbs, verbs_bytes)
     return phrase    
 
+def emulate_typing(text_field, string):
+    for i in range(len(string)):
+        search_bar.send_keys(string[i])
+        sleep(random.uniform(0, 0.1))
+
 def random_line(dictionary, total_bytes):
     dictionary.seek(random.randint(0, total_bytes-15))
     dictionary.readline()
     return dictionary.readline().strip('\n')
 
 def get_bonus_rewards(xpath_id):
-  driver.get('http://www.bing.com/rewards/dashboard')
-  full_xpath = "//*[contains(@href,'" + xpath_id + "')]"
-  mylist = driver.find_elements_by_xpath(full_xpath)
-  numlinks = len(mylist)
+    driver.get('http://www.bing.com/rewards/dashboard')
+    full_xpath = "//*[contains(@href,'" + xpath_id + "')]"
+    mylist = driver.find_elements_by_xpath(full_xpath)
+    numlinks = len(mylist)
   
-  first = 0
-  if 'Connect to Facebook' in mylist[first].text:
-    first = 1
+    first = 0
+    if 'Connect to Facebook' in mylist[first].text:
+        first = 1
 
-  for i in range(numlinks):
-      try:
-          mylist[first].click()
-      except:
-          print "couldn't click element"
-      driver.get('http://www.bing.com/rewards/dashboard')
-      mylist = driver.find_elements_by_xpath(full_xpath)
+    for i in range(numlinks):
+        try:
+            mylist[first].click()
+        except:
+            print "couldn't click element"
+        driver.get('http://www.bing.com/rewards/dashboard')
+        mylist = driver.find_elements_by_xpath(full_xpath)
 
 # check for virutal display
 if args.virtual:
@@ -129,7 +132,8 @@ if login:
         search_button = driver.find_element_by_xpath('//*[@id="sb_form_go"]')
         search_string = generate_search()
         search_bar.clear()
-        search_bar.send_keys(search_string)
+        # search_bar.send_keys(search_string)
+        emulate_typing(search_bar, search_string)
         time.sleep(kMaxSleep * random.random())
         search_button.click()
         time.sleep(kMaxSleep * random.random())
