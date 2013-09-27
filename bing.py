@@ -75,7 +75,7 @@ def get_bonus_rewards(xpath_id):
     numlinks = len(mylist)
   
     first = 0
-    if 'Connect to Facebook' in mylist[first].text:
+    if len(mylist) > 0 and 'Connect to Facebook' in mylist[first].text:
         first = 1
 
     for i in range(numlinks):
