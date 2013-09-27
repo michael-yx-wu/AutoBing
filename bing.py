@@ -93,6 +93,22 @@ def get_bonus_rewards(xpath_id):
       print "couldn't click element"
     driver.get('http://www.bing.com/rewards/dashboard')
     mylist = driver.find_elements_by_xpath(full_xpath)
+<<<<<<< HEAD
+=======
+    numlinks = len(mylist)
+  
+    first = 0
+    if len(mylist) > 0 and 'Connect to Facebook' in mylist[first].text:
+        first = 1
+
+    for i in range(numlinks):
+        try:
+            mylist[first].click()
+        except:
+            print "couldn't click element"
+        driver.get('http://www.bing.com/rewards/dashboard')
+        mylist = driver.find_elements_by_xpath(full_xpath)
+>>>>>>> f56e8ad5c7d3b61e3c436f21ee5712644d15ce3f
 
 # check for virutal display
 if args.virtual:
