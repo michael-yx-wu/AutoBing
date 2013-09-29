@@ -111,7 +111,8 @@ def do_search():
   emulate_typing(search_bar, search_string)
   rand_sleep()    
   search_button.click()
-  print "searched " + search_string + "\n"
+  print "searched" 
+  print search_string
   rand_sleep()
 
 # check for virutal display
