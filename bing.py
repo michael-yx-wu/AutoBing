@@ -88,6 +88,8 @@ def get_bonus_rewards(xpath_id):
   full_xpath = "//*[contains(@href,'" + xpath_id + "')]"
   mylist = driver.find_elements_by_xpath(full_xpath)
   numlinks = len(mylist)
+  if numlinks == 0:
+    return
 
   first = 0
   if 'Connect to Facebook' in mylist[first].text:
@@ -100,6 +102,18 @@ def get_bonus_rewards(xpath_id):
       print "couldn't click element"
     driver.get('http://www.bing.com/rewards/dashboard')
     mylist = driver.find_elements_by_xpath(full_xpath)
+
+def do_search():
+  search_bar = driver.find_element_by_xpath('//*[@id="sb_form_q"]')
+  search_button = driver.find_element_by_xpath('//*[@id="sb_form_go"]')
+  search_string = generate_search()
+  search_bar.clear()
+  # search_bar.send_keys(search_string)
+  emulate_typing(search_bar, search_string)
+  rand_sleep()    
+  search_button.click()
+  print 'searched ' + search_string
+  rand_sleep()
 
 # check for virutal display
 if args.virtual:
@@ -143,35 +157,27 @@ except:
 
 if login:
   for i in range(args.numsearch):
-    search_bar = driver.find_element_by_xpath('//*[@id="sb_form_q"]')
-    search_button = driver.find_element_by_xpath('//*[@id="sb_form_go"]')
-    search_string = generate_search()
-    search_bar.clear()
-    # search_bar.send_keys(search_string)
-    emulate_typing(search_bar, search_string)
-    rand_sleep()    
-    search_button.click()
-    rand_sleep()
+    do_search()
 
-    # get bonus rewards (i.e. via link clicking)
-    print 'getting bonus rewards'
-    get_bonus_rewards("rewardsapp")
-    get_bonus_rewards("rewards/challenge")
+  # get bonus rewards (i.e. via link clicking)
+  print 'getting bonus rewards'
+  get_bonus_rewards("rewardsapp")
+  get_bonus_rewards("rewards/challenge")
 
-    # attempt to redeem rewards
-    if args.getrewards:
-      print 'attempting to get rewards'
-      driver.get('http://www.bing.com/rewards/redeem/000100000004?meru=%252f')
-      try:
-        reward_button = driver.find_element_by_xpath(
-            "//*[@id='SingleProduct_SubmitForm']")
-        reward_button.click()
-        print 'attempting to confirm reward'
-        confirm_button = driver.find_element_by_xpath(
-            "//*[@id='CheckoutReview_SubmitForm']")
-        confirm_button.click()
-      except:
-        print 'insufficient reward points at this time'
+  # attempt to redeem rewards
+  if args.getrewards:
+    print 'attempting to get rewards'
+    driver.get('http://www.bing.com/rewards/redeem/000100000004?meru=%252f')
+    try:
+      reward_button = driver.find_element_by_xpath(
+          "//*[@id='SingleProduct_SubmitForm']")
+      reward_button.click()
+      print 'attempting to confirm reward'
+      confirm_button = driver.find_element_by_xpath(
+          "//*[@id='CheckoutReview_SubmitForm']")
+      confirm_button.click()
+    except:
+      print 'insufficient reward points at this time'
 
 # stop virtual display
 if args.virtual:
