@@ -29,13 +29,15 @@ parser.add_argument("-r", "--getrewards", help="attempt to redeem rewards",
 parser.add_argument("--dict", 
                     help="absolute dictionary location if not in same directory", 
                     default="")
+parser.add_argument("--norandomsleep", help="don't simulate real user",
+                    action="store_true", default=False)
 args = parser.parse_args()
 
 dirpath = re.match("^(.*)/([^/])*$",sys.argv[0]).group(1)
 if args.dict == "":
-    dictdir = dirpath + "/dict/"
+  dictdir = dirpath + "/dict/"
 else:
-    dictdir = args.dict + "/"
+  dictdir = args.dict + "/"
 
 # open dictionary files
 adj = open(dictdir + "adj.txt", 'r')
@@ -56,20 +58,25 @@ phrases = {
    4:'How to',             # <adverb> + <verb>
    5:'I want to'}          # <adverb> + <verb>
 
+def rand_sleep():
+  if !norandomsleep:
+    time.sleep(kMaxSleep * random.random())
+
 def generate_search():
   num = random.randint(1, 5)
   if num == 1 or num == 2 or num == 3:
-    phrase = phrases[num] + " " + random_line(adj, adjectives_bytes) + 
-    " " + random_line(nouns, nouns_bytes) + " " + random_line(adv, adverbs_bytes)
+    phrase = phrases[num] + " " + random_line(adj, adjectives_bytes)
+    phrase += " " + random_line(nouns, nouns_bytes) + " " 
+    phrase += random_line(adv, adverbs_bytes)
   else:
-    phrase = phrases[num] + " " + random_line(adv, adverbs_bytes) + 
-    " " + random_line(verbs, verbs_bytes)
+    phrase = phrases[num] + " " + random_line(adv, adverbs_bytes) 
+    phrase += " " + random_line(verbs, verbs_bytes)
   return phrase    
 
 def emulate_typing(text_field, string):
   for i in range(len(string)):
     search_bar.send_keys(string[i])
-    sleep(random.uniform(0, 0.1))
+    sleep(random.uniform(0.1, 0.2))
 
 def random_line(dictionary, total_bytes):
   dictionary.seek(random.randint(0, total_bytes-15))
@@ -93,22 +100,6 @@ def get_bonus_rewards(xpath_id):
       print "couldn't click element"
     driver.get('http://www.bing.com/rewards/dashboard')
     mylist = driver.find_elements_by_xpath(full_xpath)
-<<<<<<< HEAD
-=======
-    numlinks = len(mylist)
-  
-    first = 0
-    if len(mylist) > 0 and 'Connect to Facebook' in mylist[first].text:
-        first = 1
-
-    for i in range(numlinks):
-        try:
-            mylist[first].click()
-        except:
-            print "couldn't click element"
-        driver.get('http://www.bing.com/rewards/dashboard')
-        mylist = driver.find_elements_by_xpath(full_xpath)
->>>>>>> f56e8ad5c7d3b61e3c436f21ee5712644d15ce3f
 
 # check for virutal display
 if args.virtual:
@@ -158,11 +149,11 @@ if login:
     search_bar.clear()
     # search_bar.send_keys(search_string)
     emulate_typing(search_bar, search_string)
-    time.sleep(kMaxSleep * random.random())
+    rand_sleep()    
     search_button.click()
-    time.sleep(kMaxSleep * random.random())
+    rand_sleep()
 
-    # get bonus rewards
+    # get bonus rewards (i.e. via link clicking)
     print 'getting bonus rewards'
     get_bonus_rewards("rewardsapp")
     get_bonus_rewards("rewards/challenge")
