@@ -59,7 +59,7 @@ phrases = {
    5:'I want to'}          # <adverb> + <verb>
 
 def rand_sleep():
-  if !norandomsleep:
+  if !args.norandomsleep:
     time.sleep(kMaxSleep * random.random())
 
 def generate_search():
