@@ -11,6 +11,8 @@ import re
 import time
 
 kMaxSleep = 5
+kFBLoginLink = "https://www.facebook.com/login.php?skip_api_login=1&next=https%3A%2F%2Fwww.facebook.com%2Fdialog%2Foauth%3Fclient_id%3D111239619098%26auth_type%3Dhttps%26redirect_uri%3Dhttps%253A%252F%252Fssl.bing.com%252Ffd%252Fauth%252Fsignin%253Faction%253Dfacebook_oauth%2526provider%253Dfacebook%26from_login%3D1&cancel_uri=https%3A%2F%2Fssl.bing.com%2Ffd%2Fauth%2Fsignin%3Faction%3Dfacebook_oauth%26provider%3Dfacebook&api_key=111239619098"
+kMSLoginLink = "https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=11&ct=1367638624&rver=6.0.5286.0&wp=MBI&wreply=http:%2F%2Fwww.bing.com%2FPassport.aspx%3Frequrl%3Dhttp%253a%252f%252fwww.bing.com%252f&lc=1033&id=264960"
 
 # seed random number generator with current system time
 random.seed(time.time())
@@ -65,17 +67,14 @@ def rand_sleep():
 def generate_search():
   num = random.randint(1, 5)
   if num == 1 or num == 2 or num == 3:
-    phrase = phrases[num] + " " + random_line(adj, adjectives_bytes)
-    phrase += " " + random_line(nouns, nouns_bytes) + " " 
-    phrase += random_line(adv, adverbs_bytes)
+    phrase = phrases[num] + " " + random_line(adj, adjectives_bytes) + " " + random_line(nouns, nouns_bytes) + " " + random_line(adv, adverbs_bytes)
   else:
-    phrase = phrases[num] + " " + random_line(adv, adverbs_bytes) 
-    phrase += " " + random_line(verbs, verbs_bytes)
+    phrase = phrases[num] + " " + random_line(adv, adverbs_bytes) + " " + random_line(verbs, verbs_bytes)
   return phrase    
 
 def emulate_typing(text_field, string):
   for i in range(len(string)):
-    search_bar.send_keys(string[i])
+    text_field.send_keys(string[i])
     sleep(random.uniform(0.1, 0.2))
 
 def random_line(dictionary, total_bytes):
@@ -112,7 +111,7 @@ def do_search():
   emulate_typing(search_bar, search_string)
   rand_sleep()    
   search_button.click()
-  print 'searched ' + search_string
+  print "searched " + search_string + "\n"
   rand_sleep()
 
 # check for virutal display
@@ -132,14 +131,14 @@ if args.virtual:
 # start driver and login
 driver = webdriver.Chrome()
 if args.login == "fb":
-  driver.get("https://www.facebook.com/login.php?skip_api_login=1&next=https%3A%2F%2Fwww.facebook.com%2Fdialog%2Foauth%3Fclient_id%3D111239619098%26auth_type%3Dhttps%26redirect_uri%3Dhttps%253A%252F%252Fssl.bing.com%252Ffd%252Fauth%252Fsignin%253Faction%253Dfacebook_oauth%2526provider%253Dfacebook%26from_login%3D1&cancel_uri=https%3A%2F%2Fssl.bing.com%2Ffd%2Fauth%2Fsignin%3Faction%3Dfacebook_oauth%26provider%3Dfacebook&api_key=111239619098")
+  driver.get(kFBLoginLink)
   driver.find_element_by_xpath('//*[@id="email"]').send_keys(args.username);
   driver.find_element_by_xpath('//*[@id="pass"]').clear()
   driver.find_element_by_xpath('//*[@id="pass"]').send_keys(args.password);
   driver.find_element_by_xpath('//*[@id="u_0_1"]').click()
 
 elif args.login == "ms":
-  driver.get("https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=11&ct=1367638624&rver=6.0.5286.0&wp=MBI&wreply=http:%2F%2Fwww.bing.com%2FPassport.aspx%3Frequrl%3Dhttp%253a%252f%252fwww.bing.com%252f&lc=1033&id=264960")
+  driver.get(kMSLoginLink)
   driver.find_element_by_xpath('//*[@id="i0116"]').send_keys(args.username);
   driver.find_element_by_xpath('//*[@id="i0118"]').clear()
   driver.find_element_by_xpath('//*[@id="i0118"]').send_keys(args.password);
