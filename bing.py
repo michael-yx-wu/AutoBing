@@ -269,14 +269,10 @@ def main():
 
   # cleanup
   driver.quit()
-
-
-  #todo: where are the ones that should be removed?
-  #try:
-    #os.remove(args.directory + "chromedriver.log")
-    #os.remove(args.directory + "libpeerconnection.log")
-  #except:
-  #  print "a log file was not removed"
+  try:
+    os.remove(args.directory + "chromedriver.log")
+  except:
+    print "a log file was not removed"
 
   exit(error)
 
