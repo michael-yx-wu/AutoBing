@@ -119,6 +119,8 @@ def emulate_typing(text_field, string):
   for i in range(len(string)):
     text_field.send_keys(string[i])
     sleep(random.uniform(kMinKeyDelay, kMaxKeyDelay))
+  sleep(random.uniform(kMinKeyDelay, kMaxKeyDelay))
+
 
 def random_line(dictionary, total_bytes):
   dictionary.seek(random.randint(0, total_bytes - 15))
@@ -127,6 +129,7 @@ def random_line(dictionary, total_bytes):
 
 def get_bonus_rewards(xpath_id):
   print "Attempting to get bonus rewards at xpath: " + xpath_id
+  rand_sleep()
   driver.get('http://www.bing.com/rewards/dashboard')
   full_xpath = "//*[contains(@href,'" + xpath_id + "')]"
   mylist = driver.find_elements_by_xpath(full_xpath)
@@ -261,6 +264,7 @@ def main():
         reward_button.click()
         confirm_button = driver.find_element_by_xpath(
             "//*[@id='CheckoutReview_SubmitForm']")
+        rand_sleep()
         confirm_button.click()
         rand_sleep()
       except:
