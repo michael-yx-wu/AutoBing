@@ -172,9 +172,10 @@ def do_search():
     search_button.click()
     search_count += 1
 
-  print "executed " + search_count + " searches"
+  print "executed " + str(search_count) + " searches"
   if search_count < args.numsearch:
-    write_error("expected " + args.numsearch + " searches but had " + search_count)
+    write_error("expected " + str(args.numsearch) + " searches but had " +
+                str(search_count))
 
 def main():
   # seed random number generator with current system time
