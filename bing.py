@@ -87,8 +87,8 @@ error = 0
 try:
   driver = webdriver.Chrome()
 except:
-  write_error("failed to initialize webdriver")
-  exit(error)
+  print "failed to initialize webdriver"
+  exit(1)
 
 ###
 # End global executions
@@ -186,6 +186,7 @@ def main():
       print 'not running on linux, xvfb not present\ndefaulting to display'
       args.virtual = False
     else:
+      print "attempting to run in virtual display"
       try:
         from pyvirtualdisplay import Display
         display = Display(visible=False, size=(800,600))
