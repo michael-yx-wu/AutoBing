@@ -276,10 +276,6 @@ def main():
       except:
         write_error("failed to redeem rewards")
 
-  # stop virtual display
-  if args.virtual:
-    display.stop()
-
   # cleanup
   try:
     os.remove(args.directory + "chromedriver.log")
@@ -292,3 +288,7 @@ try:
   main()
 finally:
   driver.quit()
+
+  # stop virtual display
+  if args.virtual:
+    display.stop()
