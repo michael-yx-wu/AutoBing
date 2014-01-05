@@ -151,7 +151,7 @@ def get_bonus_rewards(xpath_id):
     driver.get('http://www.bing.com/rewards/dashboard')
     mylist = driver.find_elements_by_xpath(full_xpath)
 
-  print "clicked " + bonus_points_clicked + " bonus links"
+  print "clicked " + str(bonus_points_clicked) + " bonus links"
 
 def do_search():
   search_count = 0
@@ -267,7 +267,6 @@ def main():
     display.stop()
 
   # cleanup
-  driver.quit()
   try:
     os.remove(args.directory + "chromedriver.log")
   except:
@@ -275,4 +274,7 @@ def main():
 
   exit(error)
 
-main()
+try:
+  main()
+finally:
+  driver.quit()
