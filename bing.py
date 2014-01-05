@@ -126,6 +126,7 @@ def random_line(dictionary, total_bytes):
   return dictionary.readline().strip('\n')
 
 def get_bonus_rewards(xpath_id):
+  print "Attempting to get bonus rewards at xpath: " + xpath_id
   driver.get('http://www.bing.com/rewards/dashboard')
   full_xpath = "//*[contains(@href,'" + xpath_id + "')]"
   mylist = driver.find_elements_by_xpath(full_xpath)
@@ -246,7 +247,7 @@ def main():
         should_redeem = False
 
     if should_redeem:
-      print 'attempting to get reward'
+      print 'attempting to redeem reward'
       try:
         reward_button = driver.find_element_by_xpath(
               "//*[@id='SingleProduct_SubmitForm']")
