@@ -82,6 +82,21 @@ verbs_bytes = os.stat(dictdir + "verb.txt").st_size
 # Record errors
 error = 0
 
+# check for virutal display
+if args.virtual:
+  if not 'linux' in sys.platform:
+    print 'not running on linux, xvfb not present\ndefaulting to display'
+    args.virtual = False
+  else:
+    print "attempting to run in virtual display"
+    try:
+      from pyvirtualdisplay import Display
+      display = Display(visible=False, size=(800,600))
+      display.start()
+    except ImportError:
+      print 'failed to find library pyvirtualdisplay'
+      args.virtual = False
+
 # Start webdriver
 try:
   driver = webdriver.Chrome()
@@ -131,6 +146,12 @@ def get_bonus_rewards(xpath_id):
   print "Attempting to get bonus rewards at xpath: " + xpath_id
   rand_sleep()
   driver.get('http://www.bing.com/rewards/dashboard')
+
+  # print the currently available points
+  points_available_xpath = driver.find_element_by_xpath('//*[@id="user-status"]/div[2]/div[2]/div[2]/span')
+  points_available = points_available_xpath.text
+  print "before attempting bonus points, current points: " + points_available
+
   full_xpath = "//*[contains(@href,'" + xpath_id + "')]"
   mylist = driver.find_elements_by_xpath(full_xpath)
   numlinks = len(mylist)
@@ -184,21 +205,6 @@ def main():
   # seed random number generator with current system time
   random.seed(time.time())
 
-  # check for virutal display
-  if args.virtual:
-    if not 'linux' in sys.platform:
-      print 'not running on linux, xvfb not present\ndefaulting to display'
-      args.virtual = False
-    else:
-      print "attempting to run in virtual display"
-      try:
-        from pyvirtualdisplay import Display
-        display = Display(visible=False, size=(800,600))
-        display.start()
-      except ImportError:
-        print 'failed to find library pyvirtualdisplay'
-        args.virtual = False
-
   # start driver and login
   login = True
   try:
@@ -236,7 +242,7 @@ def main():
     # get bonus rewards (i.e. via link clicking)
     print 'getting bonus points'
     get_bonus_rewards("rewardsapp")
-    get_bonus_rewards("rewards/challenge")
+    #get_bonus_rewards("rewards/challenge")
 
     # attempt to redeem rewards
     should_redeem = True
