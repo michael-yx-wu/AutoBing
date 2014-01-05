@@ -230,7 +230,7 @@ def main():
     search_bar = driver.find_element_by_xpath('//*[@id="sb_form_q"]')
     emulate_typing(search_bar, "start")
     driver.find_element_by_xpath('//*[@id="sb_form_go"]').click()
-    print 'login successful to ' + args.login
+    print 'login successful to account ' + args.username + " at " + args.login
   except:
     write_error("login failed")
     login = False
