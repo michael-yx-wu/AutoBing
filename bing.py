@@ -196,19 +196,24 @@ def main():
     # Sign into facebook or microsoft
     if args.login == "fb":
       driver.get(kFBLoginLink)
-      driver.find_element_by_xpath('//*[@id="email"]').send_keys(args.username);
-      driver.find_element_by_xpath('//*[@id="pass"]').clear()
-      driver.find_element_by_xpath('//*[@id="pass"]').send_keys(args.password);
+      email_form = driver.find_element_by_xpath('//*[@id="email"]')\
+      emulate_typing(email_form, args.username)
+      pass_form = driver.find_element_by_xpath('//*[@id="pass"]')
+      pass_form.clear()
+      emulate_typing(pass_form, args.password)
       driver.find_element_by_xpath('//*[@id="u_0_1"]').click()
 
     elif args.login == "ms":
       driver.get(kMSLoginLink)
-      driver.find_element_by_xpath('//*[@id="i0116"]').send_keys(args.username);
-      driver.find_element_by_xpath('//*[@id="i0118"]').clear()
-      driver.find_element_by_xpath('//*[@id="i0118"]').send_keys(args.password);
+      email_form = driver.find_element_by_xpath('//*[@id="i0116"]')
+      emulate_typing(email_form, args.username)
+      pass_form = driver.find_element_by_xpath('//*[@id="i0118"]')
+      pass_form.clear()
+      emulate_typing(pass_form, args.password)
       driver.find_element_by_xpath('//*[@id="idSIButton9"]').click()
 
-    driver.find_element_by_xpath('//*[@id="sb_form_q"]').send_keys("start")
+    search_bar = driver.find_element_by_xpath('//*[@id="sb_form_q"]')
+    emulate_typing(search_bar, "start")
     driver.find_element_by_xpath('//*[@id="sb_form_go"]').click()
     print 'login successful to ' + args.login
   except:
