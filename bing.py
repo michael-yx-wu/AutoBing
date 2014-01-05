@@ -80,11 +80,15 @@ adverbs_bytes = os.stat(dictdir + "adv.txt").st_size
 nouns_bytes = os.stat(dictdir + "noun.txt").st_size
 verbs_bytes = os.stat(dictdir + "verb.txt").st_size
 
-# Start webdriver
-driver = webdriver.Chrome()
-
 # Record errors
 error = 0
+
+# Start webdriver
+try:
+  driver = webdriver.Chrome()
+except:
+  write_error("failed to initialize webdriver")
+  exit(error)
 
 ###
 # End global executions
@@ -264,11 +268,13 @@ def main():
   # cleanup
   driver.quit()
 
-  try:
-    os.remove(args.directory + "chromedriver.log")
-    os.remove(args.directory + "libpeerconnection.log")
-  except:
-    print "a log file was not removed"
+
+  #todo: where are the ones that should be removed?
+  #try:
+    #os.remove(args.directory + "chromedriver.log")
+    #os.remove(args.directory + "libpeerconnection.log")
+  #except:
+  #  print "a log file was not removed"
 
   exit(error)
 
