@@ -196,7 +196,7 @@ def main():
     # Sign into facebook or microsoft
     if args.login == "fb":
       driver.get(kFBLoginLink)
-      email_form = driver.find_element_by_xpath('//*[@id="email"]')\
+      email_form = driver.find_element_by_xpath('//*[@id="email"]')
       emulate_typing(email_form, args.username)
       pass_form = driver.find_element_by_xpath('//*[@id="pass"]')
       pass_form.clear()
