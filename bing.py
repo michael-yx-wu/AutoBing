@@ -55,8 +55,7 @@ parser.add_argument("--dict",
 parser.add_argument("--norandomsleep", help="don't simulate real user",
                     action="store_true", default=False)
 parser.add_argument("--directory", help="the calling directory, if not from "
-                                        "the script location",
-                    action="store_true", default=".")
+                                        "the script location", default=".")
 args = parser.parse_args()
 args.directory = args.directory + "/"
 
