@@ -238,6 +238,7 @@ def main():
     should_redeem = True
     if args.getrewards:
       print 'attempting to get rewards'
+      rand_sleep()
       try:
         driver.get(kAmazonRewardLink)
       except:
@@ -255,10 +256,12 @@ def main():
 
     if should_redeem:
       try:
+        rand_sleep()
         reward_button.click()
         confirm_button = driver.find_element_by_xpath(
             "//*[@id='CheckoutReview_SubmitForm']")
         confirm_button.click()
+        rand_sleep()
       except:
         write_error("failed to redeem rewards")
 
