@@ -193,8 +193,12 @@ def do_search():
     search_bar.clear()
 
     emulate_typing(search_bar, search_string)
-    search_button.click()
-    search_count += 1
+    try:
+      search_button.click()
+      search_count += 1
+    except:
+      write_error("failed to click search_botton")
+      break
 
   print "executed " + str(search_count) + " searches"
   if search_count < args.numsearch:
