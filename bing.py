@@ -14,6 +14,7 @@ kMSLoginLink = "https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=11&ct=13676
 kAmazonRewardLink = 'http://www.bing.com/rewards/redeem/000100000004?meru=%252f'
 kMinKeyDelay = 0.03
 kMaxKeyDelay = 0.08
+kMaxSearchErrors = 10
 
 kErrorFile = "error.log"
 
@@ -180,13 +181,15 @@ def get_bonus_rewards(xpath_id):
 
 def do_search():
   search_count = 0
-  for i in range(args.numsearch):
+  error_count = 0
+  while search_count < args.numsearch and error_count < kMaxSearchErrors:
     try:
       search_bar = driver.find_element_by_xpath('//*[@id="sb_form_q"]')
       search_button = driver.find_element_by_xpath('//*[@id="sb_form_go"]')
     except:
       write_error("failed to select searchbar or searchbutton")
-      break
+      error_count += 1
+      continue
 
     rand_sleep()
     search_string = generate_search()
@@ -198,7 +201,7 @@ def do_search():
       search_count += 1
     except:
       write_error("failed to click search_botton")
-      break
+      error_count += 1
 
   print "executed " + str(search_count) + " searches"
   if search_count < args.numsearch:
