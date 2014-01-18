@@ -190,7 +190,7 @@ def do_search():
       search_bar = driver.find_element_by_xpath('//*[@id="sb_form_q"]')
       search_button = driver.find_element_by_xpath('//*[@id="sb_form_go"]')
     except:
-      write_error("failed to select searchbar or searchbutton")
+      print "failed to select searchbar or searchbutton"
       error_count += 1
       continue
 
@@ -203,7 +203,7 @@ def do_search():
       search_button.click()
       search_count += 1
     except:
-      write_error("failed to click search_botton")
+      print "failed to click search_botton"
       error_count += 1
 
   print "executed " + str(search_count) + " searches"
