@@ -104,7 +104,7 @@ if args.virtual:
 try:
   driver = webdriver.Chrome()
 except:
-  traceback.print_exp()
+  traceback.print_exc()
   print "failed to initialize webdriver"
   exit(1)
 
