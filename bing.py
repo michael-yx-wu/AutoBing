@@ -1,5 +1,6 @@
 #!/usr/local/bin/python
 from selenium import webdriver
+
 import argparse
 import os
 import random
@@ -7,6 +8,7 @@ from time import sleep
 import sys
 import re
 import time
+import traceback
 
 kMaxSleep = 5
 kFBLoginLink = "https://www.facebook.com/login.php?skip_api_login=1&next=https%3A%2F%2Fwww.facebook.com%2Fdialog%2Foauth%3Fclient_id%3D111239619098%26auth_type%3Dhttps%26redirect_uri%3Dhttps%253A%252F%252Fssl.bing.com%252Ffd%252Fauth%252Fsignin%253Faction%253Dfacebook_oauth%2526provider%253Dfacebook%26from_login%3D1&cancel_uri=https%3A%2F%2Fssl.bing.com%2Ffd%2Fauth%2Fsignin%3Faction%3Dfacebook_oauth%26provider%3Dfacebook&api_key=111239619098"
@@ -102,6 +104,7 @@ if args.virtual:
 try:
   driver = webdriver.Chrome()
 except:
+  traceback.print_exp()
   print "failed to initialize webdriver"
   exit(1)
 
