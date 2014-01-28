@@ -152,9 +152,12 @@ def get_bonus_rewards(xpath_id):
   driver.get('http://www.bing.com/rewards/dashboard')
 
   # print the currently available points
-  points_available_xpath = driver.find_element_by_xpath('//*[@id="user-status"]/div[2]/div[2]/div[2]/span')
-  points_available = points_available_xpath.text
-  print "before attempting bonus points, current points: " + points_available
+  try:
+    points_available_xpath = driver.find_element_by_xpath('//*[@id="user-status"]/div[2]/div[2]/div[2]/span')
+    points_available = points_available_xpath.text
+    print "before attempting bonus points, current points: " + points_available
+  except:
+    print "failed to check points available"
 
   full_xpath = "//*[contains(@href,'" + xpath_id + "')]"
   mylist = driver.find_elements_by_xpath(full_xpath)
@@ -251,7 +254,10 @@ def main():
 
     # get bonus rewards (i.e. via link clicking)
     print 'getting bonus points'
-    get_bonus_rewards("rewardsapp")
+    try:
+      get_bonus_rewards("rewardsapp")
+    except:
+      "ERROR: failed to get bonus rewards due to exception"
     #get_bonus_rewards("rewards/challenge")
 
     # attempt to redeem rewards
