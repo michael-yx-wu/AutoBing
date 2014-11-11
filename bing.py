@@ -292,12 +292,6 @@ def main():
       except:
         write_error("failed to redeem rewards")
 
-  # cleanup
-  try:
-    os.remove(args.directory + "chromedriver.log")
-  except:
-    print "a log file was not removed"
-
   exit(error)
 
 try:
