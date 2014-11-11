@@ -16,7 +16,7 @@ kMSLoginLink = "https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=11&ct=13676
 kAmazonRewardLink = 'http://www.bing.com/rewards/redeem/000100000004?meru=%252f'
 kMinKeyDelay = 0.03
 kMaxKeyDelay = 0.08
-kMaxSearchErrors = 10
+kMaxSearchErrors = 80
 
 kErrorFile = "error.log"
 
