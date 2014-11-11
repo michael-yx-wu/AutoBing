@@ -153,7 +153,7 @@ def get_bonus_rewards(xpath_id):
 
   # print the currently available points
   try:
-    points_available_xpath = driver.find_element_by_xpath('//*[@id="user-status"]/div[2]/div[2]/div[2]/span')
+    points_available_xpath = driver.find_element_by_xpath('//*[@id="user-status"]/span[2]/div[1]')
     points_available = points_available_xpath.text
     print "before attempting bonus points, current points: " + points_available
   except:
