@@ -102,7 +102,9 @@ if args.virtual:
 
 # Start webdriver
 try:
-  driver = webdriver.Chrome()
+  chromedriver = "/usr/local/bin/chromedriver"
+  os.environ["webdriver.chrome.driver"] = chromedriver
+  driver = webdriver.Chrome(chromedriver)
 except:
   traceback.print_exc()
   print "failed to initialize webdriver"
