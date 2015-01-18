@@ -118,7 +118,7 @@ def write_error(msg):
   error = 1
   errorfile = open(args.directory + kErrorFile, "a")
   errorfile.write(time.strftime("%d/%m/%Y") + "\n")
-  errorfile.write("email: " + args.username + " account: " + args.login + "\n")
+  errorfile.write("email: " + args.username + "\n")
   errorfile.write(msg + "\n\n")
   errorfile.close()
 
@@ -139,7 +139,6 @@ def emulate_typing(text_field, string):
     text_field.send_keys(string[i])
     sleep(random.uniform(kMinKeyDelay, kMaxKeyDelay))
   sleep(random.uniform(kMinKeyDelay, kMaxKeyDelay))
-
 
 def random_line(dictionary, total_bytes):
   dictionary.seek(random.randint(0, total_bytes - 15))
@@ -221,29 +220,19 @@ def main():
   # start driver and login
   login = True
   try:
-    # Sign into facebook or microsoft
-    if args.login == "fb":
-      driver.get(kFBLoginLink)
-      email_form = driver.find_element_by_xpath('//*[@id="email"]')
-      emulate_typing(email_form, args.username)
-      pass_form = driver.find_element_by_xpath('//*[@id="pass"]')
-      pass_form.clear()
-      emulate_typing(pass_form, args.password)
-      driver.find_element_by_xpath('//*[@id="u_0_1"]').click()
-
-    elif args.login == "ms":
-      driver.get(kMSLoginLink)
-      email_form = driver.find_element_by_xpath('//*[@id="i0116"]')
-      emulate_typing(email_form, args.username)
-      pass_form = driver.find_element_by_xpath('//*[@id="i0118"]')
-      pass_form.clear()
-      emulate_typing(pass_form, args.password)
-      driver.find_element_by_xpath('//*[@id="idSIButton9"]').click()
+    # Sign into microsoft
+    driver.get(kMSLoginLink)
+    email_form = driver.find_element_by_xpath('//*[@id="i0116"]')
+    emulate_typing(email_form, args.username)
+    pass_form = driver.find_element_by_xpath('//*[@id="i0118"]')
+    pass_form.clear()
+    emulate_typing(pass_form, args.password)
+    driver.find_element_by_xpath('//*[@id="idSIButton9"]').click()
 
     search_bar = driver.find_element_by_xpath('//*[@id="sb_form_q"]')
     emulate_typing(search_bar, "start")
     driver.find_element_by_xpath('//*[@id="sb_form_go"]').click()
-    print 'login successful to account ' + args.username + " at " + args.login
+    print 'login successful to account ' + args.username
   except:
     write_error("login failed")
     login = False
