@@ -49,6 +49,8 @@ parser.add_argument("-u", "--username", help="login username")
 parser.add_argument("-p", "--password", help="login password")
 parser.add_argument("-r", "--getrewards", help="attempt to redeem rewards",
                     action="store_true", default=False)
+parser.add_argument("-c", "--chromedriverpath", help="full path to the " +
+                    "chromedriver executable")
 parser.add_argument("--dict",
                     help="absolute dictionary location if not in same directory",
                     default="")
@@ -98,8 +100,13 @@ if args.virtual:
       args.virtual = False
 
 # Start webdriver
+# Attempt to use the chromedriver specified
+# Else search PATH for a chromedriver
 try:
-  driver = webdriver.Chrome()
+  if args.chromedriverpath:
+    driver = webdriver.Chrome(args.chromedriverpath)
+  else:
+    driver = webdriver.Chrome()
 except:
   print "failed to initialize webdriver"
   exit(1)
@@ -128,7 +135,7 @@ def generate_search():
     phrase = phrases[num] + " " + random_line(adj, adjectives_bytes) + " " + random_line(nouns, nouns_bytes) + " " + random_line(adv, adverbs_bytes)
   else:
     phrase = phrases[num] + " " + random_line(adv, adverbs_bytes) + " " + random_line(verbs, verbs_bytes)
-  return phrase    
+  return phrase
 
 def emulate_typing(text_field, string):
   for i in range(len(string)):
