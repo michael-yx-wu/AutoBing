@@ -119,7 +119,7 @@ def write_error(msg):
   error = 1
   errorfile = open(args.directory + kErrorFile, "a")
   errorfile.write(time.strftime("%d/%m/%Y") + "\n")
-  errorfile.write("email: " + args.username + " account: " + args.login + "\n")
+  errorfile.write("email: " + args.username + "\n")
   errorfile.write(msg + "\n\n")
   errorfile.close()
 
@@ -224,7 +224,7 @@ def main():
     search_bar = driver.find_element_by_xpath('//*[@id="sb_form_q"]')
     emulate_typing(search_bar, "start")
     driver.find_element_by_xpath('//*[@id="sb_form_go"]').click()
-    print 'login successful to ' + args.login
+    print 'login successful'
   except:
     write_error("login failed")
     login = False
