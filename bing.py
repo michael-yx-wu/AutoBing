@@ -9,7 +9,6 @@ import re
 import time
 
 kMaxSleep = 5
-kFBLoginLink = "https://www.facebook.com/login.php?skip_api_login=1&next=https%3A%2F%2Fwww.facebook.com%2Fdialog%2Foauth%3Fclient_id%3D111239619098%26auth_type%3Dhttps%26redirect_uri%3Dhttps%253A%252F%252Fssl.bing.com%252Ffd%252Fauth%252Fsignin%253Faction%253Dfacebook_oauth%2526provider%253Dfacebook%26from_login%3D1&cancel_uri=https%3A%2F%2Fssl.bing.com%2Ffd%2Fauth%2Fsignin%3Faction%3Dfacebook_oauth%26provider%3Dfacebook&api_key=111239619098"
 kMSLoginLink = "https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=11&ct=1367638624&rver=6.0.5286.0&wp=MBI&wreply=http:%2F%2Fwww.bing.com%2FPassport.aspx%3Frequrl%3Dhttp%253a%252f%252fwww.bing.com%252f&lc=1033&id=264960"
 kAmazonRewardLink = 'http://www.bing.com/rewards/redeem/000100000004?meru=%252f'
 kMinKeyDelay = 0.03
@@ -40,7 +39,6 @@ phrases = {
 
 # Parse command line args
 parser = argparse.ArgumentParser()
-parser.add_argument("login", help="login method", choices=['fb', 'ms'])
 parser.add_argument("-d", "--virtual", help="run in virtual display",
                     action="store_true", default=False)
 parser.add_argument("-n", "--numsearch", help="number of searches",
@@ -215,24 +213,13 @@ def main():
   # start driver and login
   login = True
   try:
-    # Sign into facebook or microsoft
-    if args.login == "fb":
-      driver.get(kFBLoginLink)
-      email_form = driver.find_element_by_xpath('//*[@id="email"]')
-      emulate_typing(email_form, args.username)
-      pass_form = driver.find_element_by_xpath('//*[@id="pass"]')
-      pass_form.clear()
-      emulate_typing(pass_form, args.password)
-      driver.find_element_by_xpath('//*[@id="u_0_1"]').click()
-
-    elif args.login == "ms":
-      driver.get(kMSLoginLink)
-      email_form = driver.find_element_by_xpath('//*[@id="i0116"]')
-      emulate_typing(email_form, args.username)
-      pass_form = driver.find_element_by_xpath('//*[@id="i0118"]')
-      pass_form.clear()
-      emulate_typing(pass_form, args.password)
-      driver.find_element_by_xpath('//*[@id="idSIButton9"]').click()
+    driver.get(kMSLoginLink)
+    email_form = driver.find_element_by_xpath('//*[@id="i0116"]')
+    emulate_typing(email_form, args.username)
+    pass_form = driver.find_element_by_xpath('//*[@id="i0118"]')
+    pass_form.clear()
+    emulate_typing(pass_form, args.password)
+    driver.find_element_by_xpath('//*[@id="idSIButton9"]').click()
 
     search_bar = driver.find_element_by_xpath('//*[@id="sb_form_q"]')
     emulate_typing(search_bar, "start")
