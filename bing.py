@@ -7,6 +7,13 @@ from time import sleep
 import sys
 import re
 import time
+import smtplib
+from os.path import basename
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import formatdate
+
 
 kMaxSleep = 5
 kMSLoginLink = "https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=11&ct=1367638624&rver=6.0.5286.0&wp=MBI&wreply=http:%2F%2Fwww.bing.com%2FPassport.aspx%3Frequrl%3Dhttp%253a%252f%252fwww.bing.com%252f&lc=1033&id=264960"
@@ -14,7 +21,7 @@ kAmazonRewardLink = 'http://www.bing.com/rewards/redeem/000100000004?meru=%252f'
 kMinKeyDelay = 0.03
 kMaxKeyDelay = 0.08
 
-kErrorFile = "error.log"
+kErrorFile = time.strftime("%Y-%m-%d-%H:%M:%S") + ".log"
 
 # Dict of searchable phrases
 phrases = {
@@ -56,6 +63,11 @@ parser.add_argument("--norandomsleep", help="don't simulate real user",
                     action="store_true", default=False)
 parser.add_argument("--directory", help="the calling directory, if not from "
                                         "the script location", default=".")
+parser.add_argument("-e", "--emailerrors", help="option to email errors",
+                    action="store_true", default=False)
+parser.add_argument("-eu", "--emailusername", help="email account username")
+parser.add_argument("-ep", "--emailpassword", help="email account password")
+
 args = parser.parse_args()
 args.directory = args.directory + "/"
 
@@ -105,8 +117,8 @@ try:
     driver = webdriver.Chrome(args.chromedriverpath)
   else:
     driver = webdriver.Chrome()
-except:
-  print "failed to initialize webdriver"
+except Exception as e:
+  print e
   exit(1)
 
 ###
@@ -118,8 +130,7 @@ def write_error(msg):
   global error
   error = 1
   errorfile = open(args.directory + kErrorFile, "a")
-  errorfile.write(time.strftime("%d/%m/%Y") + "\n")
-  errorfile.write("email: " + args.username + "\n")
+  errorfile.write(args.username + ": ")
   errorfile.write(msg + "\n\n")
   errorfile.close()
 
@@ -153,7 +164,7 @@ def get_bonus_rewards(xpath_id):
   driver.get('http://www.bing.com/rewards/dashboard')
 
   # print the currently available points
-  points_available_xpath = driver.find_element_by_xpath('//*[@id="user-status"]/div[2]/div[2]/div[2]/span')
+  points_available_xpath = driver.find_element_by_xpath('//*[@id="user-status"]/span[2]/div[1]')
   points_available = points_available_xpath.text
   print "before attempting bonus points, current points: " + points_available
 
@@ -206,9 +217,35 @@ def do_search():
     write_error("expected " + str(args.numsearch) + " searches but had " +
                 str(search_count))
 
+def email_error_log():
+  # create message
+  send_from = "no-reply@autobing.com"
+  send_to = "michael.yixuan.wu@gmail.com"
+  msg = MIMEMultipart()
+  msg['To'] = send_to
+  msg['Subject'] = "AutoBing error - " + time.strftime('%d/%m/%Y')
+  msg.attach(MIMEText(("There was an error while running autobing for the "
+                       "following account: \n\n%s\n\nSee the attached log for "
+                       "more information." %(args.username))))
+
+  # attach the error log
+  errorfile = open(args.directory + kErrorFile, "r")
+  attached_file = MIMEApplication(errorfile.read())
+  errorfile.close()
+  attached_file.add_header('Content-Disposition', 'attachment; filename=%s'
+    % (kErrorFile))
+  msg.attach(attached_file)
+
+  # send email
+  server = smtplib.SMTP('smtp.gmail.com', 587)
+  server.starttls()
+  server.login(args.emailusername, args.emailpassword)
+  server.sendmail(send_from, send_to, msg.as_string())
+  server.close()
+
 def main():
   # seed random number generator with current system time
-  random.seed(time.time())
+  random.seed(os.urandom(100))
 
   # start driver and login
   login = True
@@ -220,7 +257,7 @@ def main():
     pass_form.clear()
     emulate_typing(pass_form, args.password)
     driver.find_element_by_xpath('//*[@id="idSIButton9"]').click()
-
+    time.sleep(5)
     search_bar = driver.find_element_by_xpath('//*[@id="sb_form_q"]')
     emulate_typing(search_bar, "start")
     driver.find_element_by_xpath('//*[@id="sb_form_go"]').click()
@@ -239,7 +276,7 @@ def main():
     #get_bonus_rewards("rewards/challenge")
 
     # attempt to redeem rewards
-    should_redeem = True
+    should_redeem = args.getrewards
     if args.getrewards:
       print 'attempting to get rewards'
       rand_sleep()
@@ -274,15 +311,11 @@ def main():
   if args.virtual:
     display.stop()
 
-  # cleanup
-  try:
-    os.remove(args.directory + "chromedriver.log")
-  except:
-    print "a log file was not removed"
-
   exit(error)
 
 try:
   main()
 finally:
   driver.quit()
+  if args.emailerrors and error:
+    email_error_log()
