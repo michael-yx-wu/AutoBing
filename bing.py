@@ -1,14 +1,20 @@
 #!/usr/local/bin/python
-from selenium import webdriver
 
 import argparse
 import os
 import random
-from time import sleep
 import sys
 import re
 import time
-import traceback
+import smtplib
+
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import formatdate
+from os.path import basename
+from selenium import webdriver
+from time import sleep
 
 kMaxSleep = 5
 kMSLoginLink = "https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=11&ct=1367638624&rver=6.0.5286.0&wp=MBI&wreply=http:%2F%2Fwww.bing.com%2FPassport.aspx%3Frequrl%3Dhttp%253a%252f%252fwww.bing.com%252f&lc=1033&id=264960"
@@ -17,7 +23,7 @@ kMinKeyDelay = 0.03
 kMaxKeyDelay = 0.08
 kMaxSearchErrors = 80
 
-kErrorFile = "error.log"
+kErrorFile = time.strftime("%Y-%m-%d-%H:%M:%S") + ".log"
 
 # Dict of searchable phrases
 phrases = {
@@ -50,6 +56,8 @@ parser.add_argument("-u", "--username", help="login username")
 parser.add_argument("-p", "--password", help="login password")
 parser.add_argument("-r", "--getrewards", help="attempt to redeem rewards",
                     action="store_true", default=False)
+parser.add_argument("-c", "--chromedriverpath", help="full path to the " +
+                    "chromedriver executable")
 parser.add_argument("--dict",
                     help="absolute dictionary location if not in same directory",
                     default="")
@@ -57,6 +65,11 @@ parser.add_argument("--norandomsleep", help="don't simulate real user",
                     action="store_true", default=False)
 parser.add_argument("--directory", help="the calling directory, if not from "
                                         "the script location", default=".")
+parser.add_argument("-e", "--emailerrors", help="option to email errors",
+                    action="store_true", default=False)
+parser.add_argument("-eu", "--emailusername", help="email account username")
+parser.add_argument("-ep", "--emailpassword", help="email account password")
+
 args = parser.parse_args()
 args.directory = args.directory + "/"
 
@@ -99,13 +112,21 @@ if args.virtual:
       args.virtual = False
 
 # Start webdriver
+# Attempt to use the chromedriver specified
+# Else search PATH for a chromedriver
 try:
-  chromedriver = "/usr/local/bin/chromedriver"
-  os.environ["webdriver.chrome.driver"] = chromedriver
-  driver = webdriver.Chrome(chromedriver)
-except:
-  traceback.print_exc()
+  if args.chromedriverpath:
+    driver = webdriver.Chrome(args.chromedriverpath)
+  else:
+    driver = webdriver.Chrome()
+    '''
+    chromedriver = "/usr/local/bin/chromedriver"
+    os.environ["webdriver.chrome.driver"] = chromedriver
+    driver = webdriver.Chrome(chromedriver)
+    '''
+except Exception as e:
   print "failed to initialize webdriver"
+  print e
   exit(1)
 
 ###
@@ -117,8 +138,7 @@ def write_error(msg):
   global error
   error = 1
   errorfile = open(args.directory + kErrorFile, "a")
-  errorfile.write(time.strftime("%d/%m/%Y") + "\n")
-  errorfile.write("email: " + args.username + "\n")
+  errorfile.write(args.username + ": ")
   errorfile.write(msg + "\n\n")
   errorfile.close()
 
@@ -132,7 +152,7 @@ def generate_search():
     phrase = phrases[num] + " " + random_line(adj, adjectives_bytes) + " " + random_line(nouns, nouns_bytes) + " " + random_line(adv, adverbs_bytes)
   else:
     phrase = phrases[num] + " " + random_line(adv, adverbs_bytes) + " " + random_line(verbs, verbs_bytes)
-  return phrase    
+  return phrase
 
 def emulate_typing(text_field, string):
   for i in range(len(string)):
@@ -213,14 +233,39 @@ def do_search():
     write_error("expected " + str(args.numsearch) + " searches but had " +
                 str(search_count))
 
+def email_error_log():
+  # create message
+  send_from = "no-reply@autobing.com"
+  send_to = "michael.yixuan.wu@gmail.com"
+  msg = MIMEMultipart()
+  msg['To'] = send_to
+  msg['Subject'] = "AutoBing error - " + time.strftime('%d/%m/%Y')
+  msg.attach(MIMEText(("There was an error while running autobing for the "
+                       "following account: \n\n%s\n\nSee the attached log for "
+                       "more information." %(args.username))))
+
+  # attach the error log
+  errorfile = open(args.directory + kErrorFile, "r")
+  attached_file = MIMEApplication(errorfile.read())
+  errorfile.close()
+  attached_file.add_header('Content-Disposition', 'attachment; filename=%s'
+    % (kErrorFile))
+  msg.attach(attached_file)
+
+  # send email
+  server = smtplib.SMTP('smtp.gmail.com', 587)
+  server.starttls()
+  server.login(args.emailusername, args.emailpassword)
+  server.sendmail(send_from, send_to, msg.as_string())
+  server.close()
+
 def main():
   # seed random number generator with current system time
-  random.seed(time.time())
+  random.seed(os.urandom(100))
 
   # start driver and login
   login = True
   try:
-    # Sign into microsoft
     driver.get(kMSLoginLink)
     email_form = driver.find_element_by_xpath('//*[@id="i0116"]')
     emulate_typing(email_form, args.username)
@@ -229,10 +274,11 @@ def main():
     emulate_typing(pass_form, args.password)
     driver.find_element_by_xpath('//*[@id="idSIButton9"]').click()
 
+    time.sleep(5)
     search_bar = driver.find_element_by_xpath('//*[@id="sb_form_q"]')
     emulate_typing(search_bar, "start")
     driver.find_element_by_xpath('//*[@id="sb_form_go"]').click()
-    print 'login successful to account ' + args.username
+    print 'login successful'
   except:
     write_error("login failed")
     login = False
@@ -250,7 +296,7 @@ def main():
     #get_bonus_rewards("rewards/challenge")
 
     # attempt to redeem rewards
-    should_redeem = True
+    should_redeem = args.getrewards
     if args.getrewards:
       print 'attempting to get rewards'
       rand_sleep()
@@ -291,3 +337,7 @@ finally:
   # stop virtual display
   if args.virtual:
     display.stop()
+
+  if args.emailerrors and error:
+    email_error_log()
+
