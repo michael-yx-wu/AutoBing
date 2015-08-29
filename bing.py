@@ -292,8 +292,7 @@ def main():
     try:
       get_bonus_rewards("rewardsapp")
     except:
-      "ERROR: failed to get bonus rewards due to exception"
-    #get_bonus_rewards("rewards/challenge")
+      print("ERROR: failed to get bonus rewards due to exception")
 
     # attempt to redeem rewards
     should_redeem = args.getrewards
